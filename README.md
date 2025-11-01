@@ -45,7 +45,7 @@ Webページにアクセス
 - クリックでコピー
 - シンプルなUI／ダークモード
 
-## 今後の機能
+### 今後の機能
 - 音声読み上げ（Web Speech API / TTS）
 - SNSカード画像生成
 - お気に入り登録
@@ -60,8 +60,12 @@ Webページにアクセス
 - CSS：Tailwind CSS
 - テスト：RSpec（最低限のSystemテスト）
 - その他：i18n / dotenv-rails
-- 実装イメージ
+
+### 実装イメージ
 - 多言語リストをconfig/locales/messages.ymlに保持
 - コントローラーで1件取得→View表示
 - ボタンイベントはStimulusで制御
 - クリップボードはnavigator.clipboard.writeTextを使用
+
+## 画面遷移図
+Figma：https://www.figma.com/design/M8rHbwDhZ4WLX1cp5a8F7k/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9CDaijoubu-Button?node-id=0-1&t=amO3nu7fyYYCDAMr-1
