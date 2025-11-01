@@ -55,7 +55,7 @@ Webページにアクセス
 ## 使用する技術スタック
 - フレームワーク：Ruby on Rails 7.x（Hotwire / Stimulus）
 - 言語：Ruby 3.x
-- DB：MVPは不要（必要であればPostgreSQL）
+- DB：MVPは不要（YAMLで開始）／将来的に PostgreSQL で `languages`・`messages` を導入予定
 - デプロイ：Render / Fly.io（無料枠想定）
 - CSS：Tailwind CSS
 - テスト：RSpec（最低限のSystemテスト）
@@ -69,3 +69,7 @@ Webページにアクセス
 
 ## 画面遷移図
 Figma：https://www.figma.com/design/M8rHbwDhZ4WLX1cp5a8F7k/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9CDaijoubu-Button?node-id=0-1&t=amO3nu7fyYYCDAMr-1
+
+## ER図
+- https://gyazo.com/966b235b5074d3e8bf4ef586f1cabe9d
+- 目的：MVP後の拡張を見据えた最小スキーマ（`languages` 1 — n `messages`）
