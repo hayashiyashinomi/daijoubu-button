@@ -1,48 +1,40 @@
 <style>
-/* ダークモードでメッセージを強制白 */
+/* 念のため：ダーク時は #message を白で強制（iOS の揺れどめ） */
 @media (prefers-color-scheme: dark) {
   #message { color: #fff !important; }
 }
 </style>
 
-<div class="text-center mt-16 px-4">
-  <h1 class="text-4xl font-bold tracking-tight mb-6">
-    大丈夫ボタン
-  </h1>
+<div class="min-h-screen flex items-center justify-center">
+  <div class="text-center px-4">
+    <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
 
-  <p id="message" class="text-2xl text-gray-900 dark:text-white font-semibold mb-8">
-    ボタンを押すと「大丈夫」が表示されます
-  </p>
+    <!-- min-h で行の高さを固定 => 押した瞬間にゅるっとズレるのを防ぐ -->
+    <p id="message"
+       class="text-2xl font-semibold text-gray-900 dark:text-gray-100
+              min-h-[2.5rem] transition-opacity duration-150 ease-out">
+      ボタンを押すと「大丈夫」が表示されます
+    </p>
 
-  <!-- 大丈夫ボタン -->
-  <button
-    id="ok-button"
-    class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow"
-  >
-    大丈夫ボタンを押す
-  </button>
+    <div class="mt-6 flex gap-3 justify-center">
+      <button id="ok-button"
+              class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
+        大丈夫ボタンを押す
+      </button>
 
-  <!-- コピー用ボタン -->
-  <button
-    id="copy-button"
-    class="ml-4 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md"
-  >
-    コピーする
-  </button>
+      <button id="copy-button"
+              class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">
+        コピーする
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
 document.addEventListener('turbo:load', () => {
   const messages = [
-    "大丈夫",
-    "Everything will be okay",
-    "Está todo bien",
-    "Ça va aller",
-    "괜찮아",
-    "Все будет хорошо",
-    "Tudo bem",
-    "จะไม่เป็นไร",
-    "Tudo vai dar certo"
+    "大丈夫","Everything will be okay","Está todo bien","Ça va aller","괜찮아",
+    "Все будет хорошо","Tudo bem","จะไม่เป็นไร","Tudo vai dar certo"
   ];
 
   const msg = document.getElementById('message');
@@ -51,19 +43,18 @@ document.addEventListener('turbo:load', () => {
 
   okBtn?.addEventListener('click', () => {
     const random = messages[Math.floor(Math.random() * messages.length)];
-    msg.textContent = random;
+    // フェードで感じよく更新（ズレなし）
+    msg.style.opacity = 0.01;
+    setTimeout(() => { msg.textContent = random; msg.style.opacity = 1; }, 70);
   });
 
   copyBtn?.addEventListener('click', async () => {
-    const text = msg.textContent;
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(msg.textContent);
       const before = copyBtn.textContent;
       copyBtn.textContent = "コピーしました！";
       setTimeout(() => copyBtn.textContent = before, 1200);
-    } catch {
-      alert("コピーに失敗しました");
-    }
+    } catch { alert("コピーに失敗しました"); }
   });
 });
 </script>
