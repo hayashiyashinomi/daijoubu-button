@@ -1,39 +1,48 @@
 <style>
-/* iOS/Safari 対策：ダークモード時は確実に暗色＆白文字 */
+/* 画面中央配置 */
+.center-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
-  html { color-scheme: dark; }
+  body { background-color: #111; color: #fff; }
+  #message { color: #fff !important; }
+}
+
+/* フラッシュ風メッセージ */
+.copy-alert {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #10b981; /* green-500 */
 }
 </style>
 
-<div class="min-h-screen flex items-center justify-center bg-white text-gray-900 dark:bg-neutral-900 dark:text-white">
-  <div class="w-full max-w-xl mx-auto px-4 text-center">
-    <!-- 見出し：常に中央 -->
-    <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
+<div class="center-wrapper px-4">
+  <h1 class="text-4xl font-bold mb-6">大丈夫ボタン</h1>
 
-    <!-- メッセージ：高さ固定でレイアウトが揺れない -->
-    <p id="message" class="mx-auto mb-8 text-2xl font-semibold 
-      text-gray-900 dark:text-white
-      min-h-[3rem] flex items-center justify-center">
-      ボタンを押すと「大丈夫」が表示されます
-    </p>
+  <p id="message" class="text-2xl font-semibold mb-8">
+    ボタンを押すと「大丈夫」が表示されます
+  </p>
 
-    <!-- ボタン群：幅固定で揺れない -->
-    <div class="flex items-center justify-center gap-4">
-      <button
-        id="ok-button"
-        class="w-[280px] px-6 py-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-600 transition"
-        type="button">
-        大丈夫ボタンを押す
-      </button>
+  <div class="flex gap-4 justify-center mb-2">
+    <button id="ok-button"
+      class="w-40 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
+      大丈夫ボタン
+    </button>
 
-      <button
-        id="copy-button"
-        class="w-[180px] px-4 py-3 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition disabled:opacity-60"
-        type="button">
-        コピーする
-      </button>
-    </div>
+    <button id="copy-button"
+      class="w-40 px-4 py-3 bg-gray-700 hover:bg-gray-800 text-white rounded-lg shadow">
+      コピーする
+    </button>
   </div>
+
+  <div id="copy-status" class="copy-alert" style="display:none;">コピーしました！</div>
 </div>
 
 <script>
@@ -53,38 +62,24 @@ document.addEventListener('turbo:load', () => {
   const msg = document.getElementById('message');
   const okBtn = document.getElementById('ok-button');
   const copyBtn = document.getElementById('copy-button');
-
-  // レイアウトの揺れ防止：初期高さはCSSのmin-hで確保済み
+  const copyStatus = document.getElementById('copy-status');
+  let timer = null;
 
   okBtn.addEventListener('click', () => {
-    const random = messages[Math.floor(Math.random() * messages.length)];
-    msg.textContent = random;
+    msg.textContent = messages[Math.floor(Math.random() * messages.length)];
   });
-
-  // 「コピーしました」固まり対策：既存タイマーをクリアしてから再セット
-  let copyTimer = null;
-  const copyDefaultLabel = "コピーする";
 
   copyBtn.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(msg.textContent || "");
-      // ラベル更新（連打でもタイマーを一度クリア）
-      if (copyTimer) clearTimeout(copyTimer);
-      copyBtn.disabled = true;
-      copyBtn.textContent = "コピーしました！";
-      copyTimer = setTimeout(() => {
-        copyBtn.textContent = copyDefaultLabel;
-        copyBtn.disabled = false;
-        copyTimer = null;
+      await navigator.clipboard.writeText(msg.textContent);
+
+      copyStatus.style.display = "block";
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        copyStatus.style.display = "none";
       }, 1200);
     } catch {
-      // 失敗時も“固まり”を回避
-      if (copyTimer) clearTimeout(copyTimer);
-      copyBtn.textContent = "コピー失敗…";
-      copyTimer = setTimeout(() => {
-        copyBtn.textContent = copyDefaultLabel;
-        copyTimer = null;
-      }, 1200);
+      alert("コピーに失敗しました");
     }
   });
 });
