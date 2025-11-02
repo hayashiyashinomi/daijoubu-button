@@ -1,0 +1,62 @@
+<div class="text-center mt-10">
+  <h1 class="text-3xl font-bold mb-4">
+    大丈夫ボタン
+  </h1>
+
+  <p class="text-xl text-gray-600 dark:text-gray-300 mb-4" id="message">
+    ボタンを押すと「大丈夫」が表示されます
+  </p>
+
+  <!-- 大丈夫ボタン -->
+  <button class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow mb-2"
+          id="ok-button">
+    大丈夫ボタンを押す
+  </button>
+
+  <!-- コピー用ボタン -->
+  <button class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md"
+          id="copy-button">
+    コピーする
+  </button>
+</div>
+
+<script>
+document.addEventListener('turbo:load', () => {
+  const messages = [
+    "大丈夫",
+    "Everything will be okay",
+    "Está todo bien",
+    "Ça va aller",
+    "괜찮아",
+    "Все будет хорошо",
+    "Tudo bem",
+    "จะไม่เป็นไร",
+    "Tudo vai dar certo"
+  ];
+
+  const msg = document.getElementById('message');
+  const okBtn = document.getElementById('ok-button');
+  const copyBtn = document.getElementById('copy-button');
+
+  if (okBtn) {
+    okBtn.addEventListener('click', () => {
+      const random = messages[Math.floor(Math.random() * messages.length)];
+      msg.textContent = random;
+    });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const text = msg.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        const before = copyBtn.textContent;
+        copyBtn.textContent = "コピーしました！";
+        setTimeout(() => copyBtn.textContent = before, 1200);
+      } catch {
+        alert("コピーに失敗しました");
+      }
+    });
+  }
+});
+</script>

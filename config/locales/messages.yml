@@ -1,0 +1,12 @@
+ja:
+  ok_messages:
+    - 大丈夫だよ
+    - 心配しないでね
+    - きっと良くなるよ
+    - 焦らなくていいよ
+en:
+  ok_messages:
+    - It's going to be okay
+    - Don't worry
+    - You'll be fine
+    - Take it easy
