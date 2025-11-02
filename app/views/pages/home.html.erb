@@ -1,42 +1,36 @@
-<!-- 画面中央にまとめて配置 -->
-<div class="min-h-screen flex items-center justify-center px-4">
-  <div class="w-full max-w-xl text-center">
-    <h1 class="text-4xl font-bold tracking-tight mb-8">大丈夫ボタン</h1>
+<div class="min-h-screen grid place-items-center px-4">
+  <div class="w-full max-w-md text-center">
+    <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
 
-    <!-- メッセージの表示領域は高さを確保してレイアウトの揺れを防ぐ -->
+    <!-- メッセージ表示：固定幅・固定高でズレ防止 -->
     <p id="message"
-       class="mx-auto text-2xl font-semibold mb-10 text-gray-900 dark:text-white transition-colors"
-       style="min-height: 2.8rem;">
+       class="mx-auto mb-8 text-2xl font-semibold leading-relaxed w-full min-h-[2.5rem]">
       ボタンを押すと「大丈夫」が表示されます
     </p>
 
-    <!-- ボタン行。幅を固定して“文字変化でもズレない” -->
-    <div class="flex flex-wrap gap-4 justify-center">
-      <button
-        id="ok-button"
-        class="min-w-[12rem] px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-400"
-        type="button">
+    <div class="flex items-center justify-center gap-3">
+      <!-- 固定幅でズレ防止 -->
+      <button id="ok-button"
+        class="w-72 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition">
         大丈夫ボタンを押す
       </button>
 
-      <button
-        id="copy-button"
-        class="min-w-[9rem] px-4 py-3 bg-gray-700 hover:bg-gray-800 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-gray-500"
-        type="button">
-        コピーする
+      <button id="copy-button"
+        class="w-40 px-4 py-3 bg-zinc-700 hover:bg-zinc-800 text-white rounded-md transition">
+        コピー
       </button>
     </div>
 
-    <!-- コピーのフィードバック（ボタン文字を書き換えずに安全に表示） -->
-    <p id="copy-feedback"
-       class="mt-4 h-6 text-sm opacity-0 transition-opacity duration-200"
-       aria-live="polite"></p>
+    <!-- コピー通知トースト：初期は非表示 -->
+    <div id="copy-toast"
+         class="mt-4 text-sm opacity-0 pointer-events-none transition-opacity duration-200">
+      コピーしました
+    </div>
   </div>
 </div>
 
 <script>
 document.addEventListener('turbo:load', () => {
-  // 多言語メッセージ（必要なら増やせます）
   const messages = [
     "大丈夫",
     "Everything will be okay",
@@ -49,54 +43,39 @@ document.addEventListener('turbo:load', () => {
     "Tudo vai dar certo"
   ];
 
-  const msgEl   = document.getElementById('message');
-  const okBtn   = document.getElementById('ok-button');
+  const msg = document.getElementById('message');
+  const okBtn = document.getElementById('ok-button');
   const copyBtn = document.getElementById('copy-button');
-  const fbEl    = document.getElementById('copy-feedback');
+  const toast = document.getElementById('copy-toast');
 
-  // 中央寄せのまま表示が揺れないよう、メッセージだけを差し替え
+  // 文字色は body に合わせているので、特別なCSSは不要
   okBtn?.addEventListener('click', () => {
     const random = messages[Math.floor(Math.random() * messages.length)];
-    msgEl.textContent = random;
+    msg.textContent = random;
   });
 
-  // 連打で固まらないコピー：
-  //  - ボタン文字は変えない（幅がズレない）
-  //  - 下に小さなフィードバック表示を出す
-  //  - すでにトーストが出ていたらタイマーをリセット
-  let fbTimer = null;
-
+  let copyTimer = null;
   copyBtn?.addEventListener('click', async () => {
-    const text = msgEl.textContent.trim();
-    if (!text) return;
+    // 連打ガード：一時的に無効化
+    copyBtn.disabled = true;
 
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(msg.textContent || "");
+      // ラベル固定のまま、トーストだけ点灯
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
 
-      // 既存タイマーがあれば消す（連打でも固まらない）
-      if (fbTimer) clearTimeout(fbTimer);
-
-      fbEl.textContent = "コピーしました！";
-      fbEl.classList.remove('opacity-0');
-      fbEl.classList.add('opacity-100');
-
-      // 900ms後にふわっと消える
-      fbTimer = setTimeout(() => {
-        fbEl.classList.remove('opacity-100');
-        fbEl.classList.add('opacity-0');
-        fbTimer = null;
-      }, 900);
+      // 既存タイマーがあれば消す
+      if (copyTimer) clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+        copyTimer = null;
+      }, 1000);
     } catch {
-      // 失敗時も見た目が崩れない
-      fbEl.textContent = "コピーに失敗しました";
-      fbEl.classList.remove('opacity-0');
-      fbEl.classList.add('opacity-100');
-      if (fbTimer) clearTimeout(fbTimer);
-      fbTimer = setTimeout(() => {
-        fbEl.classList.remove('opacity-100');
-        fbEl.classList.add('opacity-0');
-        fbTimer = null;
-      }, 1200);
+      alert("コピーに失敗しました");
+    } finally {
+      setTimeout(() => { copyBtn.disabled = false; }, 300);
     }
   });
 });
