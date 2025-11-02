@@ -6,6 +6,13 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <meta name="color-scheme" content="light dark">
+    <style>
+    @media (prefers-color-scheme: dark){
+    html,body{ background-color:#0f172a !important; color:#fff !important; }
+  }
+    </style>
+
   </head>
   <body class="h-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
     <%= yield %>

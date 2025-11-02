@@ -1,32 +1,32 @@
-<div class="min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-xl mx-auto px-4 text-center">
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md text-center">
+    <!-- タイトル（中央固定） -->
     <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
 
-    <!-- メッセージ：高さ固定でズレ防止。ダークで白になる -->
+    <!-- メッセージ領域：高さ固定で“ぬるっ”とズレない -->
     <p id="message"
        class="text-2xl font-semibold mb-8 text-gray-900 dark:text-white"
-       style="min-height:3rem;">
+       style="min-height: 2.5rem;">
       ボタンを押すと「大丈夫」が表示されます
     </p>
 
-    <div class="flex items-center justify-center gap-4">
+    <!-- ボタン縦並び（幅固定でブレ防止） -->
+    <div class="flex flex-col items-center gap-3">
       <button id="ok-button"
-              class="w-48 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
-        大丈夫ボタンを押す
+              class="w-60 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
+        押す
       </button>
 
       <button id="copy-button"
-              class="w-32 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">
+              class="w-60 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">
         コピー
       </button>
     </div>
 
-    <!-- トースト：初期は必ず非表示（inline styleで保険） -->
+    <!-- トースト（初期は非表示） -->
     <div id="toast"
-         class="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-md text-white bg-gray-800/90"
-         style="display:none;">
-      コピーしました！
-    </div>
+         class="mt-4 hidden text-sm"
+         role="status" aria-live="polite"></div>
   </div>
 </div>
 
@@ -37,30 +37,37 @@ document.addEventListener('turbo:load', () => {
     "괜찮아","Все будет хорошо","Tudo bem","จะไม่เป็นไร","Tudo vai dar certo"
   ];
 
-  const msg   = document.getElementById('message');
-  const okBtn = document.getElementById('ok-button');
-  const cpBtn = document.getElementById('copy-button');
-  const toast = document.getElementById('toast');
+  const msg     = document.getElementById('message');
+  const okBtn   = document.getElementById('ok-button');
+  const copyBtn = document.getElementById('copy-button');
+  const toast   = document.getElementById('toast');
 
-  // メッセージの左右ブレ防止
-  msg.style.whiteSpace = 'nowrap';
-  msg.style.display = 'inline-block';
-
-  okBtn?.addEventListener('click', () => {
+  // 中央配置のまま、テキストだけ入れ替え
+  okBtn.addEventListener('click', () => {
     const random = messages[Math.floor(Math.random() * messages.length)];
     msg.textContent = random;
   });
 
-  // 連打しても安定するトースト表示
-  let timer = null;
-  cpBtn?.addEventListener('click', async () => {
+  // 連打に強いコピー（タイマーを都度クリア）
+  let toastTimer = null;
+  copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(msg.textContent);
-      toast.style.display = 'block';
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => { toast.style.display = 'none'; }, 1200);
+      toast.textContent = "コピーしました！";
+      toast.classList.remove('hidden');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.textContent = "";
+      }, 1200);
     } catch {
-      alert("コピーに失敗しました");
+      toast.textContent = "コピーに失敗しました";
+      toast.classList.remove('hidden');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.textContent = "";
+      }, 1200);
     }
   });
 });
