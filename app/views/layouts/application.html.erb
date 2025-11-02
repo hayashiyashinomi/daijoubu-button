@@ -1,32 +1,13 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html class="h-full" data-turbo-track="reload">
   <head>
-    <title>Daijoubu Button</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <title>DaijoubuButton</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <style>
-      /* iOS系の自動ダーク化対策：背景は必ず我々が決める */
-      html, body { background-color: transparent; }
-    </style>
-    <script>
-      // 初回ロードで classベースの dark を付与（媒体差を排除）
-      (function() {
-        try {
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        } catch(_) {}
-      })();
-    </script>
   </head>
-
-  <body class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white antialiased">
+  <body class="h-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
     <%= yield %>
   </body>
 </html>
