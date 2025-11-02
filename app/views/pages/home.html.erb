@@ -1,29 +1,35 @@
 <style>
-/* 念のため：ダーク時は #message を白で強制（iOS の揺れどめ） */
+/* iOS/Safari 対策：ダークモード時は確実に暗色＆白文字 */
 @media (prefers-color-scheme: dark) {
-  #message { color: #fff !important; }
+  html { color-scheme: dark; }
 }
 </style>
 
-<div class="min-h-screen flex items-center justify-center">
-  <div class="text-center px-4">
+<div class="min-h-screen flex items-center justify-center bg-white text-gray-900 dark:bg-neutral-900 dark:text-white">
+  <div class="w-full max-w-xl mx-auto px-4 text-center">
+    <!-- 見出し：常に中央 -->
     <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
 
-    <!-- min-h で行の高さを固定 => 押した瞬間にゅるっとズレるのを防ぐ -->
-    <p id="message"
-       class="text-2xl font-semibold text-gray-900 dark:text-gray-100
-              min-h-[2.5rem] transition-opacity duration-150 ease-out">
+    <!-- メッセージ：高さ固定でレイアウトが揺れない -->
+    <p id="message" class="mx-auto mb-8 text-2xl font-semibold 
+      text-gray-900 dark:text-white
+      min-h-[3rem] flex items-center justify-center">
       ボタンを押すと「大丈夫」が表示されます
     </p>
 
-    <div class="mt-6 flex gap-3 justify-center">
-      <button id="ok-button"
-              class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
+    <!-- ボタン群：幅固定で揺れない -->
+    <div class="flex items-center justify-center gap-4">
+      <button
+        id="ok-button"
+        class="w-[280px] px-6 py-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-600 transition"
+        type="button">
         大丈夫ボタンを押す
       </button>
 
-      <button id="copy-button"
-              class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">
+      <button
+        id="copy-button"
+        class="w-[180px] px-4 py-3 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition disabled:opacity-60"
+        type="button">
         コピーする
       </button>
     </div>
@@ -33,28 +39,53 @@
 <script>
 document.addEventListener('turbo:load', () => {
   const messages = [
-    "大丈夫","Everything will be okay","Está todo bien","Ça va aller","괜찮아",
-    "Все будет хорошо","Tudo bem","จะไม่เป็นไร","Tudo vai dar certo"
+    "大丈夫",
+    "Everything will be okay",
+    "Está todo bien",
+    "Ça va aller",
+    "괜찮아",
+    "Все будет хорошо",
+    "Tudo bem",
+    "จะไม่เป็นไร",
+    "Tudo vai dar certo"
   ];
 
   const msg = document.getElementById('message');
   const okBtn = document.getElementById('ok-button');
   const copyBtn = document.getElementById('copy-button');
 
-  okBtn?.addEventListener('click', () => {
+  // レイアウトの揺れ防止：初期高さはCSSのmin-hで確保済み
+
+  okBtn.addEventListener('click', () => {
     const random = messages[Math.floor(Math.random() * messages.length)];
-    // フェードで感じよく更新（ズレなし）
-    msg.style.opacity = 0.01;
-    setTimeout(() => { msg.textContent = random; msg.style.opacity = 1; }, 70);
+    msg.textContent = random;
   });
 
-  copyBtn?.addEventListener('click', async () => {
+  // 「コピーしました」固まり対策：既存タイマーをクリアしてから再セット
+  let copyTimer = null;
+  const copyDefaultLabel = "コピーする";
+
+  copyBtn.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(msg.textContent);
-      const before = copyBtn.textContent;
+      await navigator.clipboard.writeText(msg.textContent || "");
+      // ラベル更新（連打でもタイマーを一度クリア）
+      if (copyTimer) clearTimeout(copyTimer);
+      copyBtn.disabled = true;
       copyBtn.textContent = "コピーしました！";
-      setTimeout(() => copyBtn.textContent = before, 1200);
-    } catch { alert("コピーに失敗しました"); }
+      copyTimer = setTimeout(() => {
+        copyBtn.textContent = copyDefaultLabel;
+        copyBtn.disabled = false;
+        copyTimer = null;
+      }, 1200);
+    } catch {
+      // 失敗時も“固まり”を回避
+      if (copyTimer) clearTimeout(copyTimer);
+      copyBtn.textContent = "コピー失敗…";
+      copyTimer = setTimeout(() => {
+        copyBtn.textContent = copyDefaultLabel;
+        copyTimer = null;
+      }, 1200);
+    }
   });
 });
 </script>
