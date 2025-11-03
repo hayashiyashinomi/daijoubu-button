@@ -32,42 +32,26 @@
 
 <script>
 document.addEventListener('turbo:load', () => {
-  const messages = [
-    "大丈夫","Everything will be okay","Está todo bien","Ça va aller",
-    "괜찮아","Все будет хорошо","Tudo bem","จะไม่เป็นไร","Tudo vai dar certo"
-  ];
+  const messages = <%= raw @messages.to_json %>; // ← YAMLから来た配列
 
-  const msg     = document.getElementById('message');
-  const okBtn   = document.getElementById('ok-button');
-  const copyBtn = document.getElementById('copy-button');
-  const toast   = document.getElementById('toast');
+  const msg    = document.getElementById('message');
+  const okBtn  = document.getElementById('ok-button');
+  const copyBtn= document.getElementById('copy-button');
 
-  // 中央配置のまま、テキストだけ入れ替え
-  okBtn.addEventListener('click', () => {
+  okBtn?.addEventListener('click', () => {
     const random = messages[Math.floor(Math.random() * messages.length)];
     msg.textContent = random;
   });
 
-  // 連打に強いコピー（タイマーを都度クリア）
-  let toastTimer = null;
-  copyBtn.addEventListener('click', async () => {
+  copyBtn?.addEventListener('click', async () => {
+    const text = msg.textContent;
     try {
-      await navigator.clipboard.writeText(msg.textContent);
-      toast.textContent = "コピーしました！";
-      toast.classList.remove('hidden');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.add('hidden');
-        toast.textContent = "";
-      }, 1200);
+      await navigator.clipboard.writeText(text);
+      const before = copyBtn.textContent;
+      copyBtn.textContent = "コピーしました！";
+      setTimeout(() => { copyBtn.textContent = before; }, 1200);
     } catch {
-      toast.textContent = "コピーに失敗しました";
-      toast.classList.remove('hidden');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.add('hidden');
-        toast.textContent = "";
-      }, 1200);
+      alert("コピーに失敗しました");
     }
   });
 });

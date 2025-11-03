@@ -4,9 +4,66 @@ ja:
     - 心配しないでね
     - きっと良くなるよ
     - 焦らなくていいよ
+
 en:
   ok_messages:
     - It's going to be okay
     - Don't worry
     - You'll be fine
     - Take it easy
+
+de:
+  ok_messages:
+    - Alles wird gut
+
+it:
+  ok_messages:
+    - Andrà tutto bene
+
+th:
+  ok_messages:
+    - ทุกอย่างจะโอเค
+
+id:
+  ok_messages:
+    - Semua akan baik-baik saja
+
+vi:
+  ok_messages:
+    - Mọi chuyện sẽ ổn thôi
+
+ar:
+  ok_messages:
+    - "كل شيء سيكون على ما يرام"
+
+hi:
+  ok_messages:
+    - "सब ठीक हो जाएगा"
+
+fr:
+  ok_messages:
+    - Ça va aller
+    - Tout ira bien
+
+es:
+  ok_messages:
+    - Todo estará bien
+    - No te preocupes
+
+ko:
+  ok_messages:
+    - 괜찮아
+    - 다 잘 될 거야
+
+ru:
+  ok_messages:
+    - Всё будет хорошо
+
+pt:
+  ok_messages:
+    - Vai ficar tudo bem
+    - Tudo vai dar certo
+
+zh:
+  ok_messages:
+    - 一切都会好的
