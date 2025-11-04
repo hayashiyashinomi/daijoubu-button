@@ -2,4 +2,4 @@
 // app/javascript/application.js
 import "@hotwired/turbo-rails"
 import "controllers"
-import "./daijoubu"
+import "daijoubu"
