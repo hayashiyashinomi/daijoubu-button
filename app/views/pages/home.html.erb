@@ -1,62 +1,71 @@
-<div class="text-center mt-10">
-  <h1 class="text-3xl font-bold mb-4">
-    大丈夫ボタン
-  </h1>
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md text-center">
+    <!-- タイトル（中央固定） -->
+    <h1 class="text-4xl font-bold tracking-tight mb-6">大丈夫ボタン</h1>
 
-  <p class="text-xl text-gray-600 dark:text-gray-300 mb-4" id="message">
-    ボタンを押すと「大丈夫」が表示されます
-  </p>
+    <!-- メッセージ領域：高さ固定で“ぬるっ”とズレない -->
+    <p id="message"
+       class="text-2xl font-semibold mb-8 text-gray-900 dark:text-white"
+       style="min-height: 2.5rem;">
+      ボタンを押すと「大丈夫」が表示されます
+    </p>
 
-  <!-- 大丈夫ボタン -->
-  <button class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow mb-2"
-          id="ok-button">
-    大丈夫ボタンを押す
-  </button>
+    <!-- ボタン縦並び（幅固定でブレ防止） -->
+    <div class="flex flex-col items-center gap-3">
+      <button id="ok-button"
+              class="w-60 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow">
+        押す
+      </button>
 
-  <!-- コピー用ボタン -->
-  <button class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md"
-          id="copy-button">
-    コピーする
-  </button>
+      <button id="copy-button"
+              class="w-60 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">
+        コピー
+      </button>
+    </div>
+
+    <!-- コピー結果表示（高さ固定でレイアウト揺れ防止） -->
+    <p id="copy-status"
+       class="mt-3 h-6 text-sm text-emerald-600 dark:text-emerald-400"
+       aria-live="polite"></p>
+  </div>
 </div>
 
 <script>
 document.addEventListener('turbo:load', () => {
-  const messages = [
-    "大丈夫",
-    "Everything will be okay",
-    "Está todo bien",
-    "Ça va aller",
-    "괜찮아",
-    "Все будет хорошо",
-    "Tudo bem",
-    "จะไม่เป็นไร",
-    "Tudo vai dar certo"
-  ];
+  const messages = <%= raw @messages.to_json %>; // YAMLから来た配列
 
-  const msg = document.getElementById('message');
-  const okBtn = document.getElementById('ok-button');
+  const msg     = document.getElementById('message');
+  const okBtn   = document.getElementById('ok-button');
   const copyBtn = document.getElementById('copy-button');
+  const status  = document.getElementById('copy-status');
 
-  if (okBtn) {
-    okBtn.addEventListener('click', () => {
-      const random = messages[Math.floor(Math.random() * messages.length)];
-      msg.textContent = random;
-    });
-  }
+  okBtn?.addEventListener('click', () => {
+    const random = messages[Math.floor(Math.random() * messages.length)];
+    msg.textContent = random;
+  });
 
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async () => {
-      const text = msg.textContent;
-      try {
-        await navigator.clipboard.writeText(text);
-        const before = copyBtn.textContent;
-        copyBtn.textContent = "コピーしました！";
-        setTimeout(() => copyBtn.textContent = before, 1200);
-      } catch {
-        alert("コピーに失敗しました");
-      }
-    });
-  }
+  // 連打対策：単一タイマーを管理して毎回クリア
+  let copyTimerId = null;
+
+  copyBtn?.addEventListener('click', async () => {
+    const text = msg.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+
+      if (copyTimerId) clearTimeout(copyTimerId);
+      status.textContent = "コピーしました！";
+      copyTimerId = setTimeout(() => {
+        status.textContent = "";
+        copyTimerId = null;
+      }, 1200);
+    } catch (e) {
+      if (copyTimerId) clearTimeout(copyTimerId);
+      status.textContent = "コピーに失敗しました";
+      copyTimerId = setTimeout(() => {
+        status.textContent = "";
+        copyTimerId = null;
+      }, 2000);
+    }
+  });
 });
 </script>
