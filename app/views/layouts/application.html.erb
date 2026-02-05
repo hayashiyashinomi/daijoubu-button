@@ -15,7 +15,7 @@
     <% og_title = "大丈夫ボタン | 1クリックで前向きになれる" %>
     <% og_desc  = "ボタンを押すだけで、多言語の「大丈夫」がランダム表示＆コピーできる癒しアプリ。" %>
     <% og_url   = request.original_url.split("?").first %>
-    <% og_image = image_url("ogp.png") %>
+    <% og_image = "#{request.base_url}/ogp.png" %>
 
     <meta name="description" content="<%= og_desc %>">
 
