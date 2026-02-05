@@ -5,6 +5,8 @@
 - 公開URL: https://daijoubu-button.onrender.com/
 - GitHub: https://github.com/hayashiyashinomi/daijoubu-button
 
+Rails を用いて MVP を企画・実装・CI 導入・デプロイまで一通り行った個人開発プロジェクトです。
+
 ---
 
 ## サービス概要
@@ -103,6 +105,7 @@ Pull Request 作成時および手動実行時に以下をチェックします�
 - Brakeman（Rails セキュリティ解析）
 - bundler-audit（Gem 脆弱性検査）
 - importmap audit（JavaScript 依存関係チェック）
+- 現時点では MVP 優先のため lint/test/system-test は一時停止（if: false）し、scan_ruby/scan_js のみ実行
 
 ---
 
