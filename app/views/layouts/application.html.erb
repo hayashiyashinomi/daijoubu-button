@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html class="h-full" data-turbo-track="reload">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>DaijoubuButton</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <%# OGP / Twitter Card %>
+    <% og_title = "大丈夫ボタン | 1クリックで前向きになれる" %>
+    <% og_desc  = "ボタンを押すだけで、多言語の「大丈夫」がランダム表示＆コピーできる癒しアプリ。" %>
+    <% og_url   = request.original_url.split("?").first %>
+    <% og_image = image_url("ogp.png") %>
+
+    <meta name="description" content="<%= og_desc %>">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="大丈夫ボタン">
+    <meta property="og:title" content="<%= og_title %>">
+    <meta property="og:description" content="<%= og_desc %>">
+    <meta property="og:url" content="<%= og_url %>">
+    <meta property="og:image" content="<%= og_image %>">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= og_title %>">
+    <meta name="twitter:description" content="<%= og_desc %>">
+    <meta name="twitter:image" content="<%= og_image %>">
+
     <meta name="color-scheme" content="light dark">
     <style>
-    @media (prefers-color-scheme: dark){
-    html,body{ background-color:#0f172a !important; color:#fff !important; }
-  }
+      @media (prefers-color-scheme: dark){
+        html,body{ background-color:#0f172a !important; color:#fff !important; }
+      }
     </style>
-
   </head>
+
   <body class="h-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
     <%= yield %>
   </body>
